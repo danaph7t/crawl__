@@ -6,9 +6,9 @@ import (
 	"strings"
 	"time"
 
-	"gitlab.com/btlike/crawl/utils"
-	"gitlab.com/btlike/database/torrent"
-	"gitlab.com/btlike/spider"
+	"github.com/btlike/crawl/utils"
+	"github.com/btlike/database/torrent"
+	"github.com/btlike/spider"
 )
 
 //Run the spider

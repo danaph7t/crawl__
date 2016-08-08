@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"gitlab.com/btlike/spider"
+	"github.com/btlike/spider"
 )
 
 //const
