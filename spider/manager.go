@@ -16,11 +16,12 @@ const (
 )
 
 //Manager spider
-var Manager manager
+var manage manager
 
 func (p *manager) run() {
 	p.initChan()
 	p.initUniqHash()
+	p.wire = NewWire()
 	go p.monitor()
 }
 
@@ -48,11 +49,12 @@ func (p *manager) isHashinfoExist(hash string) bool {
 	if _, ok := p.uniqInfohash[hash]; ok {
 		return true
 	}
-	Manager.uniqInfohash[hash] = true
+	manage.uniqInfohash[hash] = true
 	return false
 }
 
 type manager struct {
+	wire         *Wire
 	storeMap     map[string]chan string
 	uniqInfohash map[string]bool
 	hashIDChan   chan spider.AnnounceData
@@ -64,7 +66,7 @@ func (p *manager) monitor() {
 
 	go func() {
 		for {
-			if len(Manager.uniqInfohash) >= UniqHashSize {
+			if len(manage.uniqInfohash) >= UniqHashSize {
 				p.initUniqHash()
 			}
 			time.Sleep(time.Minute)

@@ -13,25 +13,32 @@ import (
 
 //Run the spider
 func Run() {
-	Manager.run()
+	manage.run()
 
 	idList := spider.GenerateIDList(int64(utils.Config.SpiderNumber))
 
 	//开启的dht节点
 	for k, id := range idList {
 		go func(port int, id spider.ID) {
-			dhtNode := spider.NewDhtNode(&id, Manager.hashIDChan, fmt.Sprintf(":%v", utils.Config.SpiderListenPort+port))
+			dhtNode := spider.NewDhtNode(&id, manage.hashIDChan, fmt.Sprintf(":%v", utils.Config.SpiderListenPort+port))
 			dhtNode.Run()
 		}(k, id)
 	}
 
 	store()
 
-	for result := range Manager.hashIDChan {
+	for result := range manage.hashIDChan {
 		if len(result.Infohash) == 40 {
 			hash := strings.ToUpper(result.Infohash)
-			if Manager.isHashinfoExist(hash) {
+			if manage.isHashinfoExist(hash) {
 				continue
+			}
+			if result.IsAnnouncePeer {
+				var r Request
+				r.Port = result.Port
+				r.IP = result.IP.String()
+				r.InfoHash = []byte(result.Infohash)
+				manage.wire.fetchMetadata(r)
 			}
 			receive(hash)
 		}
@@ -40,13 +47,13 @@ func Run() {
 
 //根据infohash的首字符(0~F)，将infohash写入到对应chan中
 func receive(hash string) {
-	if c, ok := Manager.storeMap[string(hash[0])]; ok {
+	if c, ok := manage.storeMap[string(hash[0])]; ok {
 		c <- hash
 	}
 }
 
 func store() {
-	for k, v := range Manager.storeMap {
+	for k, v := range manage.storeMap {
 		go storeSingle(k, v)
 	}
 }
