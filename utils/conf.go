@@ -17,6 +17,7 @@ type config struct {
 	SpiderNumber     int
 	SpiderListenPort int
 	Database         string
+	EnableMetadata   bool
 	Log              *log.Logger
 	Engine           *xorm.Engine
 	ElasticClient    *elastic.Client
@@ -45,6 +46,7 @@ func initConfig() {
 		Elastic          string `json:"elastic"`
 		SpiderNumber     int    `json:"spider_number"`
 		SpiderListenPort int    `json:"spider_listen_port"`
+		EnableMetadata   bool   `json:"enable_metadata"`
 	}
 
 	f, err := os.Open("config/crawl.conf")
@@ -58,6 +60,7 @@ func initConfig() {
 	Config.SpiderNumber = c.SpiderNumber
 	Config.Database = c.Database
 	Config.SpiderListenPort = c.SpiderListenPort
+	Config.EnableMetadata = c.EnableMetadata
 	client, err := elastic.NewClient(elastic.SetURL(c.Elastic))
 	exit(err)
 	Config.ElasticClient = client
