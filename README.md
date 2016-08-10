@@ -33,6 +33,14 @@
 
 
 
+## 示例
+
+配置从DHT网络获取资源，这部分每天就可获取数十上百万资源，通过[storage](http://github.com/btlike/storage)从种子库还能获取等数资源。
+
+ ![](http://77g42f.com1.z0.glb.clouddn.com/crawl.png)
+
+
+
 
 ## 常见问题
 终于运行起了爬虫，但运行没几分钟，各种linux问题出现了，最开始应该是ulimit问题，这个问题很好解决，参考[这个文章](http://www.stutostu.com/?p=1322)。然后会出现开始大量报出：`nf_conntrack: table full, dropping packet`。这个问题参考[这个文章](http://jaseywang.me/2012/08/16/%E8%A7%A3%E5%86%B3-nf_conntrack-table-full-dropping-packet-%E7%9A%84%E5%87%A0%E7%A7%8D%E6%80%9D%E8%B7%AF/)。原因就是，
