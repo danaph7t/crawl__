@@ -10,10 +10,28 @@
 
 - 分表查询，高效去重
 - 更新资源热度
+- 实现从DHT获取metadata(BEP0009)，基于(github.com/shiyanhui/dht)[https://github.com/shiyanhui/dht]
 
 
 ## 安装
 `go get github.com/btlike/crawl`
+
+
+
+## 配置
+
+```
+{
+    "database":"root:password@tcp(127.0.0.1:3306)/torrent?charset=utf8", //数据库地址
+    "elastic":"http://127.0.0.1:9200", //搜索引擎地址
+    "spider_number":10, //爬虫数量
+    "spider_listen_port":20000, //爬虫监听起始端口,此处将监听20000~20009
+    "enable_metadata":true //是否从DHT网络获取资源(会略微降低爬虫速度)
+}
+
+```
+
+
 
 
 ## 常见问题
