@@ -1,6 +1,7 @@
 package spider
 
 import (
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -25,24 +26,35 @@ func Run() {
 		}(k, id)
 	}
 
-	store()
+	go store()
 
 	for result := range manage.hashIDChan {
 		if len(result.Infohash) == 40 {
+			if result.IsAnnouncePeer && utils.Config.EnableMetadata {
+				go getMetadata(result)
+			}
 			hash := strings.ToUpper(result.Infohash)
 			if manage.isHashinfoExist(hash) {
 				continue
 			}
-			if result.IsAnnouncePeer {
-				var r Request
-				r.Port = result.Port
-				r.IP = result.IP.String()
-				r.InfoHash = []byte(result.Infohash)
-				manage.wire.fetchMetadata(r)
-			}
 			receive(hash)
 		}
 	}
+}
+
+func getMetadata(result spider.AnnounceData) (err error) {
+	infohash := strings.ToUpper(result.Infohash)
+	has, _ := getTorrent(infohash)
+	if has {
+		return
+	}
+	var r Request
+	r.Port = result.Port
+	r.IP = result.IP.String()
+	infohashByte, _ := hex.DecodeString(result.Infohash)
+	r.InfoHash = infohashByte
+	manage.wire.fetchMetadata(r)
+	return
 }
 
 //根据infohash的首字符(0~F)，将infohash写入到对应chan中
@@ -55,6 +67,16 @@ func receive(hash string) {
 func store() {
 	for k, v := range manage.storeMap {
 		go storeSingle(k, v)
+	}
+	for resp := range manage.wire.Response() {
+		if len(resp.MetadataInfo) > 0 {
+			metadata, err := Decode(resp.MetadataInfo)
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
+			storeTorrent(metadata, resp.InfoHash)
+		}
 	}
 }
 
