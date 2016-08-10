@@ -32,6 +32,12 @@ func (a files) Len() int           { return len(a) }
 func (a files) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a files) Less(i, j int) bool { return a[i].Length > a[j].Length }
 
+type torrentSearch struct {
+	Name       string
+	Length     int64
+	CreateTime time.Time
+}
+
 func storeTorrent(data interface{}, infohash []byte) (err error) {
 	defer func() {
 		e := recover()
@@ -95,6 +101,18 @@ func storeTorrent(data interface{}, infohash []byte) (err error) {
 		err = insertData(t.Infohash, string(b))
 		if err == nil {
 			manage.storeCount++
+			data := torrentSearch{
+				Name:       t.Name,
+				Length:     t.Length,
+				CreateTime: time.Now(),
+			}
+			utils.Config.ElasticClient.Index().
+				Index("torrent").
+				Type("infohash").
+				Id(t.Infohash).
+				BodyJson(data).
+				Refresh(false).
+				Do()
 		}
 	}
 	return
