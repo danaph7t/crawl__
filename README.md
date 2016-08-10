@@ -10,7 +10,7 @@
 
 - 分表查询，高效去重
 - 更新资源热度
-- 实现从DHT获取metadata(BEP0009)，基于(github.com/shiyanhui/dht)[https://github.com/shiyanhui/dht]
+- 实现从DHT获取metadata(BEP0009)，基于[github.com/shiyanhui/dht](https://github.com/shiyanhui/dht)
 
 
 ## 安装
