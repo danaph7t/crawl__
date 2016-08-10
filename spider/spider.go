@@ -38,6 +38,7 @@ func Run() {
 	}
 }
 
+//根据infohash的首字符(0~F)，将infohash写入到对应chan中
 func receive(hash string) {
 	if c, ok := Manager.storeMap[string(hash[0])]; ok {
 		c <- hash
@@ -50,6 +51,7 @@ func store() {
 	}
 }
 
+//批量处理爬取到的infohash，如果此infohash已经抓取过了，则资源热度+1，否则存入预处理表
 func storeSingle(k string, v chan string) {
 	var hashs []string
 	for hash := range v {
