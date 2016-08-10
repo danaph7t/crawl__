@@ -2,7 +2,7 @@
 [![Build Status](https://drone.io/github.com/btlike/crawl/status.png)](https://drone.io/github.com/btlike/crawl/latest)
 
 
-基于底层爬虫库，进行infohash去重并存储
+基于底层爬虫库，进行infohash去重并存储。如果是announce_peer请求，尝试从DHT网络(BEP0009)获取资源并存储。
 
 
 
