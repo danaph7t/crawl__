@@ -216,14 +216,15 @@ func (wire *Wire) fetchMetadata(r Request) {
 	infoHash := r.InfoHash
 	address := genAddress(r.IP, r.Port)
 	//在黑名单中，直接返回
-	if _, ok := manage.blackList[address]; ok {
+	if _, ok := manage.blacklist.blackList[address]; ok {
 		return
 	}
 
 	dial, err := net.DialTimeout("tcp", address, time.Second*15)
 	if err != nil {
 		//加入黑名单
-		manage.blackList[address] = true
+		//fatal error: concurrent map writes
+		manage.blacklist.set(address)
 		return
 	}
 	conn := dial.(*net.TCPConn)

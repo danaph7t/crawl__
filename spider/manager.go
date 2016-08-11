@@ -37,43 +37,59 @@ func (p *manager) initChan() {
 }
 
 func (p *manager) initBlackList() {
-	p.mutex.Lock()
-	defer p.mutex.Unlock()
-	for k := range p.blackList {
-		delete(p.blackList, k)
+	p.blacklist.mutex.Lock()
+	defer p.blacklist.mutex.Unlock()
+	for k := range p.blacklist.blackList {
+		delete(p.blacklist.blackList, k)
 	}
-	p.blackList = nil
-	p.blackList = make(map[string]bool, BlackListSize)
+	p.blacklist.blackList = nil
+	p.blacklist.blackList = make(map[string]bool, BlackListSize)
+}
+
+func (p *blacklist) set(s string) {
+	p.mutex.Lock()
+	p.blackList[s] = true
+	p.mutex.Unlock()
 }
 
 func (p *manager) initUniqHash() {
-	p.mutex.Lock()
-	defer p.mutex.Unlock()
-	for k := range p.uniqInfohash {
-		delete(p.uniqInfohash, k)
+	p.uniqInfohash.mutex.Lock()
+	defer p.uniqInfohash.mutex.Unlock()
+	for k := range p.uniqInfohash.uniqInfohash {
+		delete(p.uniqInfohash.uniqInfohash, k)
 	}
-	p.uniqInfohash = nil
-	p.uniqInfohash = make(map[string]bool, UniqHashSize)
+	p.uniqInfohash.uniqInfohash = nil
+	p.uniqInfohash.uniqInfohash = make(map[string]bool, UniqHashSize)
 }
 
 func (p *manager) isHashinfoExist(hash string) bool {
-	p.mutex.Lock()
-	defer p.mutex.Unlock()
-	if _, ok := p.uniqInfohash[hash]; ok {
+	p.uniqInfohash.mutex.Lock()
+	defer p.uniqInfohash.mutex.Unlock()
+	if _, ok := p.uniqInfohash.uniqInfohash[hash]; ok {
 		return true
 	}
-	manage.uniqInfohash[hash] = true
+	manage.uniqInfohash.uniqInfohash[hash] = true
 	return false
 }
 
-type manager struct {
-	wire         *Wire
-	storeCount   int64
-	storeMap     map[string]chan string
+type blacklist struct {
+	blackList map[string]bool
+	mutex     sync.Mutex
+}
+
+type uniqInfohash struct {
 	uniqInfohash map[string]bool
-	blackList    map[string]bool
-	hashIDChan   chan spider.AnnounceData
 	mutex        sync.Mutex
+}
+
+type manager struct {
+	wire       *Wire
+	storeCount int64
+	storeMap   map[string]chan string
+	hashIDChan chan spider.AnnounceData
+
+	uniqInfohash uniqInfohash
+	blacklist    blacklist
 }
 
 func (p *manager) monitor() {
@@ -82,10 +98,10 @@ func (p *manager) monitor() {
 	go func() {
 		for {
 			utils.Log().Printf("从DHT网络获取资源数量(BEP9): %v\n", p.storeCount)
-			if len(manage.uniqInfohash) >= UniqHashSize {
+			if len(manage.uniqInfohash.uniqInfohash) >= UniqHashSize {
 				p.initUniqHash()
 			}
-			if len(manage.blackList) >= BlackListSize {
+			if len(manage.blacklist.blackList) >= BlackListSize {
 				p.initBlackList()
 			}
 			time.Sleep(time.Minute)
