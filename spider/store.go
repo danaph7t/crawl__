@@ -121,269 +121,75 @@ func storeTorrent(data interface{}, infohash []byte) (err error) {
 func insertData(hash string, content string) (err error) {
 	switch hash[0] {
 	case '0':
-		var data torrent.Infohash0
-		data.Infohash = hash
-		data.Data = content
-		_, err = utils.Config.Engine.Insert(&data)
+		_, err = utils.Config.Engine.Insert(&torrent.Infohash0{Infohash: hash, Data: content})
 	case '1':
-		var data torrent.Infohash1
-		data.Infohash = hash
-		data.Data = content
-		_, err = utils.Config.Engine.Insert(&data)
+		_, err = utils.Config.Engine.Insert(&torrent.Infohash1{Infohash: hash, Data: content})
 	case '2':
-		var data torrent.Infohash2
-		data.Infohash = hash
-		data.Data = content
-		_, err = utils.Config.Engine.Insert(&data)
+		_, err = utils.Config.Engine.Insert(&torrent.Infohash2{Infohash: hash, Data: content})
 	case '3':
-		var data torrent.Infohash3
-		data.Infohash = hash
-		data.Data = content
-		_, err = utils.Config.Engine.Insert(&data)
+		_, err = utils.Config.Engine.Insert(&torrent.Infohash3{Infohash: hash, Data: content})
 	case '4':
-		var data torrent.Infohash4
-		data.Infohash = hash
-		data.Data = content
-		_, err = utils.Config.Engine.Insert(&data)
+		_, err = utils.Config.Engine.Insert(&torrent.Infohash4{Infohash: hash, Data: content})
 	case '5':
-		var data torrent.Infohash5
-		data.Infohash = hash
-		data.Data = content
-		_, err = utils.Config.Engine.Insert(&data)
+		_, err = utils.Config.Engine.Insert(&torrent.Infohash5{Infohash: hash, Data: content})
 	case '6':
-		var data torrent.Infohash6
-		data.Infohash = hash
-		data.Data = content
-		_, err = utils.Config.Engine.Insert(&data)
+		_, err = utils.Config.Engine.Insert(&torrent.Infohash6{Infohash: hash, Data: content})
 	case '7':
-		var data torrent.Infohash7
-		data.Infohash = hash
-		data.Data = content
-		_, err = utils.Config.Engine.Insert(&data)
+		_, err = utils.Config.Engine.Insert(&torrent.Infohash7{Infohash: hash, Data: content})
 	case '8':
-		var data torrent.Infohash8
-		data.Infohash = hash
-		data.Data = content
-		_, err = utils.Config.Engine.Insert(&data)
+		_, err = utils.Config.Engine.Insert(&torrent.Infohash8{Infohash: hash, Data: content})
 	case '9':
-		var data torrent.Infohash9
-		data.Infohash = hash
-		data.Data = content
-		_, err = utils.Config.Engine.Insert(&data)
+		_, err = utils.Config.Engine.Insert(&torrent.Infohash9{Infohash: hash, Data: content})
 	case 'A':
-		var data torrent.Infohasha
-		data.Infohash = hash
-		data.Data = content
-		_, err = utils.Config.Engine.Insert(&data)
+		_, err = utils.Config.Engine.Insert(&torrent.Infohasha{Infohash: hash, Data: content})
 	case 'B':
-		var data torrent.Infohashb
-		data.Infohash = hash
-		data.Data = content
-		_, err = utils.Config.Engine.Insert(&data)
+		_, err = utils.Config.Engine.Insert(&torrent.Infohashb{Infohash: hash, Data: content})
 	case 'C':
-		var data torrent.Infohashc
-		data.Infohash = hash
-		data.Data = content
-		_, err = utils.Config.Engine.Insert(&data)
+		_, err = utils.Config.Engine.Insert(&torrent.Infohashc{Infohash: hash, Data: content})
 	case 'D':
-		var data torrent.Infohashd
-		data.Infohash = hash
-		data.Data = content
-		_, err = utils.Config.Engine.Insert(&data)
+		_, err = utils.Config.Engine.Insert(&torrent.Infohashd{Infohash: hash, Data: content})
 	case 'E':
-		var data torrent.Infohashe
-		data.Infohash = hash
-		data.Data = content
-		_, err = utils.Config.Engine.Insert(&data)
+		_, err = utils.Config.Engine.Insert(&torrent.Infohashe{Infohash: hash, Data: content})
 	case 'F':
-		var data torrent.Infohashf
-		data.Infohash = hash
-		data.Data = content
-		_, err = utils.Config.Engine.Insert(&data)
+		_, err = utils.Config.Engine.Insert(&torrent.Infohashf{Infohash: hash, Data: content})
 	}
 	return
 }
 
-func getTorrent(hash string) (exist bool, content string) {
-	var has bool
-	var err error
+func isTorrentExist(hash string) (has bool) {
 	switch hash[0] {
 	case '0':
-		var data torrent.Infohash0
-		data.Infohash = hash
-		has, err = utils.Config.Engine.Get(&data)
-		if err != nil {
-			return false, ""
-		}
-		if !has {
-			return false, ""
-		}
-		content = data.Data
+		has, _ = utils.Config.Engine.Get(&torrent.Infohash0{Infohash: hash})
 	case '1':
-		var data torrent.Infohash1
-		data.Infohash = hash
-		has, err = utils.Config.Engine.Get(&data)
-		if err != nil {
-			return false, ""
-		}
-		if !has {
-			return false, ""
-		}
-		content = data.Data
+		has, _ = utils.Config.Engine.Get(&torrent.Infohash1{Infohash: hash})
 	case '2':
-		var data torrent.Infohash2
-		data.Infohash = hash
-		has, err = utils.Config.Engine.Get(&data)
-		if err != nil {
-			return false, ""
-		}
-		if !has {
-			return false, ""
-		}
-		content = data.Data
+		has, _ = utils.Config.Engine.Get(&torrent.Infohash2{Infohash: hash})
 	case '3':
-		var data torrent.Infohash3
-		data.Infohash = hash
-		has, err = utils.Config.Engine.Get(&data)
-		if err != nil {
-			return false, ""
-		}
-		if !has {
-			return false, ""
-		}
-		content = data.Data
+		has, _ = utils.Config.Engine.Get(&torrent.Infohash3{Infohash: hash})
 	case '4':
-		var data torrent.Infohash4
-		data.Infohash = hash
-		has, err = utils.Config.Engine.Get(&data)
-		if err != nil {
-			return false, ""
-		}
-		if !has {
-			return false, ""
-		}
-		content = data.Data
+		has, _ = utils.Config.Engine.Get(&torrent.Infohash4{Infohash: hash})
 	case '5':
-		var data torrent.Infohash5
-		data.Infohash = hash
-		has, err = utils.Config.Engine.Get(&data)
-		if err != nil {
-			return false, ""
-		}
-		if !has {
-			return false, ""
-		}
-		content = data.Data
+		has, _ = utils.Config.Engine.Get(&torrent.Infohash5{Infohash: hash})
 	case '6':
-		var data torrent.Infohash6
-		data.Infohash = hash
-		has, err = utils.Config.Engine.Get(&data)
-		if err != nil {
-			return false, ""
-		}
-		if !has {
-			return false, ""
-		}
-		content = data.Data
+		has, _ = utils.Config.Engine.Get(&torrent.Infohash6{Infohash: hash})
 	case '7':
-		var data torrent.Infohash7
-		data.Infohash = hash
-		has, err = utils.Config.Engine.Get(&data)
-		if err != nil {
-			return false, ""
-		}
-		if !has {
-			return false, ""
-		}
-		content = data.Data
+		has, _ = utils.Config.Engine.Get(&torrent.Infohash7{Infohash: hash})
 	case '8':
-		var data torrent.Infohash8
-		data.Infohash = hash
-		has, err = utils.Config.Engine.Get(&data)
-		if err != nil {
-			return false, ""
-		}
-		if !has {
-			return false, ""
-		}
-		content = data.Data
+		has, _ = utils.Config.Engine.Get(&torrent.Infohash8{Infohash: hash})
 	case '9':
-		var data torrent.Infohash9
-		data.Infohash = hash
-		has, err = utils.Config.Engine.Get(&data)
-		if err != nil {
-			return false, ""
-		}
-		if !has {
-			return false, ""
-		}
-		content = data.Data
+		has, _ = utils.Config.Engine.Get(&torrent.Infohash9{Infohash: hash})
 	case 'A':
-		var data torrent.Infohasha
-		data.Infohash = hash
-		has, err = utils.Config.Engine.Get(&data)
-		if err != nil {
-			return false, ""
-		}
-		if !has {
-			return false, ""
-		}
-		content = data.Data
+		has, _ = utils.Config.Engine.Get(&torrent.Infohasha{Infohash: hash})
 	case 'B':
-		var data torrent.Infohashb
-		data.Infohash = hash
-		has, err = utils.Config.Engine.Get(&data)
-		if err != nil {
-			return false, ""
-		}
-		if !has {
-			return false, ""
-		}
-		content = data.Data
+		has, _ = utils.Config.Engine.Get(&torrent.Infohashb{Infohash: hash})
 	case 'C':
-		var data torrent.Infohashc
-		data.Infohash = hash
-		has, err = utils.Config.Engine.Get(&data)
-		if err != nil {
-			return false, ""
-		}
-		if !has {
-			return false, ""
-		}
-		content = data.Data
+		has, _ = utils.Config.Engine.Get(&torrent.Infohashc{Infohash: hash})
 	case 'D':
-		var data torrent.Infohashd
-		data.Infohash = hash
-		has, err = utils.Config.Engine.Get(&data)
-		if err != nil {
-			return false, ""
-		}
-		if !has {
-			return false, ""
-		}
-		content = data.Data
+		has, _ = utils.Config.Engine.Get(&torrent.Infohashd{Infohash: hash})
 	case 'E':
-		var data torrent.Infohashe
-		data.Infohash = hash
-		has, err = utils.Config.Engine.Get(&data)
-		if err != nil {
-			return false, ""
-		}
-		if !has {
-			return false, ""
-		}
-		content = data.Data
+		has, _ = utils.Config.Engine.Get(&torrent.Infohashe{Infohash: hash})
 	case 'F':
-		var data torrent.Infohashf
-		data.Infohash = hash
-		has, err = utils.Config.Engine.Get(&data)
-		if err != nil {
-			return false, ""
-		}
-		if !has {
-			return false, ""
-		}
-		content = data.Data
+		has, _ = utils.Config.Engine.Get(&torrent.Infohashf{Infohash: hash})
 	}
-	return true, content
+	return
 }

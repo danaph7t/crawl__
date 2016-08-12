@@ -14,7 +14,7 @@ import (
 var Config config
 
 type config struct {
-	SpiderNumber     int
+	SpiderNumber     int64
 	SpiderListenPort int
 	Database         string
 	EnableMetadata   bool
@@ -44,7 +44,7 @@ func initConfig() {
 	type config struct {
 		Database         string `json:"database"`
 		Elastic          string `json:"elastic"`
-		SpiderNumber     int    `json:"spider_number"`
+		SpiderNumber     int64  `json:"spider_number"`
 		SpiderListenPort int    `json:"spider_listen_port"`
 		EnableMetadata   bool   `json:"enable_metadata"`
 	}

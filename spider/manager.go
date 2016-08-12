@@ -29,7 +29,7 @@ func (p *manager) run() {
 }
 
 func (p *manager) initChan() {
-	p.hashIDChan = make(chan spider.Infohash, HashChanSize)
+	p.out = make(chan spider.Infohash, HashChanSize)
 	p.storeMap = make(map[string]chan string)
 	for i := 0; i <= 15; i++ {
 		p.storeMap[fmt.Sprintf("%X", i)] = make(chan string, StoreChanSize)
@@ -86,7 +86,7 @@ type manager struct {
 	wire       *Wire
 	storeCount int64
 	storeMap   map[string]chan string
-	hashIDChan chan spider.Infohash
+	out        chan spider.Infohash
 
 	uniqInfohash uniqInfohash
 	blacklist    blacklist
@@ -95,16 +95,14 @@ type manager struct {
 func (p *manager) monitor() {
 	go spider.Monitor()
 
-	go func() {
-		for {
-			utils.Log().Printf("从DHT网络获取资源数量(BEP9): %v\n", p.storeCount)
-			if len(manage.uniqInfohash.uniqInfohash) >= UniqHashSize {
-				p.initUniqHash()
-			}
-			if len(manage.blacklist.blackList) >= BlackListSize {
-				p.initBlackList()
-			}
-			time.Sleep(time.Minute)
+	for {
+		utils.Log().Printf("从DHT网络获取资源数量(BEP9): %v\n", p.storeCount)
+		if len(manage.uniqInfohash.uniqInfohash) >= UniqHashSize {
+			p.initUniqHash()
 		}
-	}()
+		if len(manage.blacklist.blackList) >= BlackListSize {
+			p.initBlackList()
+		}
+		time.Sleep(time.Minute)
+	}
 }

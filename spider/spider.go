@@ -16,18 +16,17 @@ import (
 func Run() {
 	manage.run()
 
-	idList := spider.GenerateIDList(int64(utils.Config.SpiderNumber))
-
-	//开启的dht节点
+	idList := spider.GenerateIDList(utils.Config.SpiderNumber)
 	for k, id := range idList {
 		go func(port int, id spider.ID) {
-			spider.RunDhtNode(&id, manage.hashIDChan, fmt.Sprintf(":%v", utils.Config.SpiderListenPort+port))
+			address := fmt.Sprintf(":%v", utils.Config.SpiderListenPort+port)
+			spider.RunDhtNode(&id, manage.out, address)
 		}(k, id)
 	}
 
 	go store()
 
-	for result := range manage.hashIDChan {
+	for result := range manage.out {
 		if len(result.Infohash) == 40 {
 			if result.IsAnnouncePeer && utils.Config.EnableMetadata {
 				go getMetadata(result)
@@ -43,16 +42,14 @@ func Run() {
 
 func getMetadata(result spider.Infohash) (err error) {
 	infohash := strings.ToUpper(result.Infohash)
-	has, _ := getTorrent(infohash)
-	if has {
+	if isTorrentExist(infohash) {
 		return
 	}
-	var r Request
-	r.Port = result.Port
-	r.IP = result.IP.String()
 	infohashByte, _ := hex.DecodeString(result.Infohash)
-	r.InfoHash = infohashByte
-	manage.wire.fetchMetadata(r)
+	manage.wire.fetchMetadata(Request{
+		Port:     result.Port,
+		IP:       result.IP.String(),
+		InfoHash: infohashByte})
 	return
 }
 
