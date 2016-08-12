@@ -21,8 +21,7 @@ func Run() {
 	//开启的dht节点
 	for k, id := range idList {
 		go func(port int, id spider.ID) {
-			dhtNode := spider.NewDhtNode(&id, manage.hashIDChan, fmt.Sprintf(":%v", utils.Config.SpiderListenPort+port))
-			dhtNode.Run()
+			spider.RunDhtNode(&id, manage.hashIDChan, fmt.Sprintf(":%v", utils.Config.SpiderListenPort+port))
 		}(k, id)
 	}
 
@@ -42,7 +41,7 @@ func Run() {
 	}
 }
 
-func getMetadata(result spider.AnnounceData) (err error) {
+func getMetadata(result spider.Infohash) (err error) {
 	infohash := strings.ToUpper(result.Infohash)
 	has, _ := getTorrent(infohash)
 	if has {

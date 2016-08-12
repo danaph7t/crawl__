@@ -29,7 +29,7 @@ func (p *manager) run() {
 }
 
 func (p *manager) initChan() {
-	p.hashIDChan = make(chan spider.AnnounceData, HashChanSize)
+	p.hashIDChan = make(chan spider.Infohash, HashChanSize)
 	p.storeMap = make(map[string]chan string)
 	for i := 0; i <= 15; i++ {
 		p.storeMap[fmt.Sprintf("%X", i)] = make(chan string, StoreChanSize)
@@ -86,7 +86,7 @@ type manager struct {
 	wire       *Wire
 	storeCount int64
 	storeMap   map[string]chan string
-	hashIDChan chan spider.AnnounceData
+	hashIDChan chan spider.Infohash
 
 	uniqInfohash uniqInfohash
 	blacklist    blacklist
