@@ -79,7 +79,7 @@ func storeTorrent(data interface{}, infohash []byte) (err error) {
 				}
 			}
 		}
-		err = utils.Repostory.CreateTorrent(t)
+		err = utils.Repository.CreateTorrent(t)
 		if err == nil {
 			manage.storeCount++
 			data := torrentSearch{

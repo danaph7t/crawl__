@@ -40,7 +40,7 @@ func Run() {
 
 func getMetadata(result spider.Infohash) (err error) {
 	infohash := strings.ToUpper(result.Infohash)
-	trt, err := utils.Repostory.GetTorrentByInfohash(infohash)
+	trt, err := utils.Repository.GetTorrentByInfohash(infohash)
 	if err == nil && len(trt.Infohash) != 0 {
 		//资源已存在
 		return
@@ -82,7 +82,7 @@ func storeSingle(k string, v chan string) {
 	for hash := range v {
 		hashs = append(hashs, hash)
 		if len(hashs) >= 100 {
-			data, err := utils.Repostory.BatchGetTorrentByInfohash(hashs)
+			data, err := utils.Repository.BatchGetTorrentByInfohash(hashs)
 			if err != nil {
 				utils.Log.Println(err)
 				continue
@@ -130,7 +130,7 @@ func storeSingle(k string, v chan string) {
 //StoreInfohash into temp table
 func StoreInfohash(infohash string) (err error) {
 	if len(infohash) == 40 {
-		return utils.Repostory.CreateInfohash(infohash)
+		return utils.Repository.CreateInfohash(infohash)
 	}
 	return
 }
