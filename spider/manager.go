@@ -96,7 +96,7 @@ func (p *manager) monitor() {
 	go spider.Monitor()
 
 	for {
-		utils.Log().Printf("从DHT网络获取资源数量(BEP9): %v\n", p.storeCount)
+		utils.Log.Printf("从DHT网络获取资源数量(BEP9): %v\n", p.storeCount)
 		if len(manage.uniqInfohash.uniqInfohash) >= UniqHashSize {
 			p.initUniqHash()
 		}

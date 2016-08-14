@@ -6,26 +6,24 @@ import (
 	"log"
 	"os"
 
-	"github.com/go-xorm/xorm"
+	"github.com/btlike/repository"
 	"gopkg.in/olivere/elastic.v3"
 )
 
-//Config define config
-var Config config
+//defile vars
+var (
+	Config        config
+	Log           *log.Logger
+	Repostory     repository.Repository
+	ElasticClient *elastic.Client
+)
 
 type config struct {
-	SpiderNumber     int64
-	SpiderListenPort int
-	Database         string
-	EnableMetadata   bool
-	Log              *log.Logger
-	Engine           *xorm.Engine
-	ElasticClient    *elastic.Client
-}
-
-//Log return logger
-func Log() *log.Logger {
-	return Config.Log
+	Database         string `json:"database"`
+	Elastic          string `json:"elastic"`
+	SpiderNumber     int64  `json:"spider_number"`
+	SpiderListenPort int    `json:"spider_listen_port"`
+	EnableMetadata   bool   `json:"enable_metadata"`
 }
 
 //Init utilsl
@@ -37,51 +35,35 @@ func Init() {
 }
 
 func initElastic() {
-	Config.ElasticClient.CreateIndex("torrent").Do()
+	client, err := elastic.NewClient(elastic.SetURL(Config.Elastic))
+	exit(err)
+	ElasticClient = client
+	ElasticClient.CreateIndex("torrent").Do()
 }
 
 func initConfig() {
-	type config struct {
-		Database         string `json:"database"`
-		Elastic          string `json:"elastic"`
-		SpiderNumber     int64  `json:"spider_number"`
-		SpiderListenPort int    `json:"spider_listen_port"`
-		EnableMetadata   bool   `json:"enable_metadata"`
-	}
-
 	f, err := os.Open("config/crawl.conf")
 	exit(err)
 	b, err := ioutil.ReadAll(f)
 	exit(err)
-	var c config
-	err = json.Unmarshal(b, &c)
+	err = json.Unmarshal(b, &Config)
 	exit(err)
-
-	Config.SpiderNumber = c.SpiderNumber
-	Config.Database = c.Database
-	Config.SpiderListenPort = c.SpiderListenPort
-	Config.EnableMetadata = c.EnableMetadata
-	client, err := elastic.NewClient(elastic.SetURL(c.Elastic))
-	exit(err)
-	Config.ElasticClient = client
 }
 
 func initLog() {
-	Config.Log = log.New(os.Stdout, "", log.Ldate|log.Ltime|log.Lshortfile)
+	Log = log.New(os.Stdout, "", log.Ldate|log.Ltime|log.Lshortfile)
 }
 
 func initDatabase() {
-	engine, err := xorm.NewEngine("mysql", Config.Database)
+	repo, err := repository.NewMysqlRepository(Config.Database, 1024, 1024)
 	if err != nil {
 		panic(err)
 	}
-	engine.SetMaxIdleConns(1000)
-	engine.SetMaxOpenConns(1000)
-	Config.Engine = engine
+	Repostory = repo
 }
 
 func exit(err error) {
 	if err != nil {
-		Log().Fatalln(err)
+		Log.Fatalln(err)
 	}
 }
