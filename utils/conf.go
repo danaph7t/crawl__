@@ -56,9 +56,7 @@ func initLog() {
 
 func initDatabase() {
 	repo, err := repository.NewMysqlRepository(Config.Database, 1024, 1024)
-	if err != nil {
-		panic(err)
-	}
+	exit(err)
 	Repostory = repo
 }
 
