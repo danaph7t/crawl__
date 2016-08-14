@@ -87,13 +87,7 @@ func storeTorrent(data interface{}, infohash []byte) (err error) {
 				Length:     t.Length,
 				CreateTime: time.Now(),
 			}
-			utils.ElasticClient.Index().
-				Index("torrent").
-				Type("infohash").
-				Id(t.Infohash).
-				BodyJson(data).
-				Refresh(false).
-				Do()
+			utils.ElasticClient.Index().Index("torrent").Type("infohash").Id(t.Infohash).BodyJson(data).Refresh(false).Do()
 		}
 	}
 	return

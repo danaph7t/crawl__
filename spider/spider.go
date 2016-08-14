@@ -106,13 +106,7 @@ func storeSingle(k string, v chan string) {
 						err = json.Unmarshal(*searchResult.Source, &tdata)
 						if err == nil {
 							tdata.Heat++
-							_, err = utils.ElasticClient.Index().
-								Index("torrent").
-								Type("infohash").
-								Id(key).
-								BodyJson(tdata).
-								Refresh(false).
-								Do()
+							_, err = utils.ElasticClient.Index().Index("torrent").Type("infohash").Id(key).BodyJson(tdata).Refresh(false).Do()
 							if err != nil {
 								utils.Log.Println(err)
 							}
