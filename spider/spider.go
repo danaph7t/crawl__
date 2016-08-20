@@ -26,14 +26,32 @@ func Run() {
 
 	for result := range manage.out {
 		if len(result.Infohash) == 40 {
-			if result.IsAnnouncePeer && utils.Config.EnableMetadata {
-				go getMetadata(result)
-			}
 			hash := strings.ToUpper(result.Infohash)
+			if result.IsAnnouncePeer {
+				go increaseResourceHeat(hash)
+				if utils.Config.EnableMetadata {
+					go getMetadata(result)
+				}
+			}
 			if manage.isHashinfoExist(hash) {
 				continue
 			}
 			receive(hash)
+		}
+	}
+}
+
+func increaseResourceHeat(key string) {
+	searchResult, err := utils.ElasticClient.Get().Index("torrent").Type("infohash").Id(key).Do()
+	if err == nil && searchResult != nil && searchResult.Source != nil {
+		var tdata torrentSearch
+		err = json.Unmarshal(*searchResult.Source, &tdata)
+		if err == nil {
+			tdata.Heat++
+			_, err = utils.ElasticClient.Index().Index("torrent").Type("infohash").Id(key).BodyJson(tdata).Refresh(false).Do()
+			if err != nil {
+				utils.Log.Println(err)
+			}
 		}
 	}
 }
@@ -99,20 +117,7 @@ func storeSingle(k string, v chan string) {
 			}
 
 			for key, value := range hashMap {
-				if value > 0 && len(key) == 40 {
-					searchResult, err := utils.ElasticClient.Get().Index("torrent").Type("infohash").Id(key).Do()
-					if err == nil && searchResult != nil && searchResult.Source != nil {
-						var tdata torrentSearch
-						err = json.Unmarshal(*searchResult.Source, &tdata)
-						if err == nil {
-							tdata.Heat++
-							_, err = utils.ElasticClient.Index().Index("torrent").Type("infohash").Id(key).BodyJson(tdata).Refresh(false).Do()
-							if err != nil {
-								utils.Log.Println(err)
-							}
-						}
-					}
-				} else {
+				if value == 0 {
 					go StoreInfohash(key)
 				}
 			}
