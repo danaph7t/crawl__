@@ -42,13 +42,14 @@ func Run() {
 }
 
 func increaseResourceHeat(key string) {
-	searchResult, err := utils.ElasticClient.Get().Index("torrent").Type("infohash").Id(key).Do()
+	indexType := strings.ToLower(string(key[0]))
+	searchResult, err := utils.ElasticClient.Get().Index("torrent").Type(indexType).Id(key).Do()
 	if err == nil && searchResult != nil && searchResult.Source != nil {
 		var tdata torrentSearch
 		err = json.Unmarshal(*searchResult.Source, &tdata)
 		if err == nil {
 			tdata.Heat++
-			_, err = utils.ElasticClient.Index().Index("torrent").Type("infohash").Id(key).BodyJson(tdata).Refresh(false).Do()
+			_, err = utils.ElasticClient.Index().Index("torrent").Type(indexType).Id(key).BodyJson(tdata).Refresh(false).Do()
 			if err != nil {
 				utils.Log.Println(err)
 			}
