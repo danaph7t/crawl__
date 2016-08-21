@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/btlike/crawl/utils"
@@ -87,7 +88,8 @@ func storeTorrent(data interface{}, infohash []byte) (err error) {
 				Length:     t.Length,
 				CreateTime: time.Now(),
 			}
-			utils.ElasticClient.Index().Index("torrent").Type("infohash").Id(t.Infohash).BodyJson(data).Refresh(false).Do()
+			indexType := strings.ToLower(string(t.Infohash[0]))
+			utils.ElasticClient.Index().Index("torrent").Type(indexType).Id(t.Infohash).BodyJson(data).Refresh(false).Do()
 		}
 	}
 	return
